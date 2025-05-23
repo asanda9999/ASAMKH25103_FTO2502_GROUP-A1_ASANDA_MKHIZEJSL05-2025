@@ -1,4 +1,7 @@
-const initialTasks = [
+//variable containg the key for local storage
+const Hold_Storage = "tasks";
+//loads the tasks from local storage 
+let initialTasks = JSON.parse(localStorage.getItem(Hold_Storage)) || [
   {
     id: 1,
     title: "Launch Epic Career 🚀",
@@ -41,6 +44,11 @@ const initialTasks = [
 ];
 
 let currentTaskId = null;
+// This function is used to save the tasks to local storage
+function saveToLocalStorage() {
+  localStorage.setItem(Hold_Storage, JSON.stringify(initialTasks));
+}
+
 
 // Updates the board with the tasks
 function updateTasks() {
@@ -50,7 +58,6 @@ function updateTasks() {
     done: document.querySelector('#done-column .tasks'),
   };
 
-  // Add tasks to DOM
   Object.values(columns).forEach(col => col.innerHTML = '');
 
   initialTasks.forEach(task => {
@@ -64,7 +71,7 @@ function updateTasks() {
   });
 }
 
-// Open modal function
+// Open modal
 function openModal(taskId) {
   currentTaskId = taskId;
   const task = initialTasks.find(k => k.id === taskId);
@@ -76,19 +83,17 @@ function openModal(taskId) {
   document.getElementById("taskModal").classList.remove("hidden");
 }
 
-// Close modal function
+// Close modal
 function closeModal() {
   document.getElementById("taskModal").classList.add("hidden");
   currentTaskId = null;
 }
 
-// Save changes function
+// Save changes
 function saveTask() {
   const title = document.getElementById("taskTitle").value.trim();
   const description = document.getElementById("taskDescription").value.trim();
   const status = document.getElementById("taskStatus").value;
-
-
 
   const task = initialTasks.find(k => k.id === currentTaskId);
   if (task) {
@@ -97,15 +102,17 @@ function saveTask() {
     task.status = status;
   }
 
+  saveToLocalStorage();
   updateTasks();
   closeModal();
 }
 
-// Delete task function
+// Delete task
 function deleteTask() {
   const index = initialTasks.findIndex(k => k.id === currentTaskId);
   if (index !== -1) {
     initialTasks.splice(index, 1);
+    saveToLocalStorage();
     updateTasks();
     closeModal();
   }
